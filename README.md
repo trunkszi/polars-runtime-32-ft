@@ -1,52 +1,71 @@
-# polars-runtime-32-ft
+# Polars 2.0 on CPython 3.14t
 
-This is a small package that provides Python 3.14t wheels specifically for the `polars` library. It is only compatible with *Polars 1.37.1*.
+This fork builds **Polars 2.0.0rc1** for the free-threaded CPython 3.14 ABI.
+It supplies a local `polars-runtime-32` wheel for Linux x86_64 with a
+`manylinux_2_28` baseline. aarch64 and Windows are placeholders until matching
+wheels are built and tested; they are not claimed as supported targets.
 
-There are currently 2 wheels available:
+The [original project](https://github.com/harshil21/polars-runtime-32-ft) supplies
+Polars 1.37.1 wheels. This fork updates the pinned source and Python package to
+2.0.0rc1, tracks the ABI patch and build recipe, and tests default GIL behavior.
+Upstream free-threaded work is tracked in
+[Polars PR #21914](https://github.com/pola-rs/polars/pull/21914).
 
-- manylinux x86_64
-- manylinux aarch64
-- win_amd64
+## Install and verify
 
-## Installation
+Use uv on Linux x86_64:
 
-This is not available on PyPI. If you want to use polars free threaded in your project, I recommend to use `uv` with this in your pyproject.toml:
-
-```toml
-[project]
-dependencies = [
-    "polars==1.37.1",
-    "polars-runtime-32"
-]
-
-[tool.uv.sources]
-polars-runtime-32 = [
-{ url = "https://github.com/harshil21/polars-runtime-32-ft/releases/download/v1.37.1/polars_runtime_32-1.37.1-cp314-cp314t-manylinux_2_31_aarch64.whl", marker = "platform_machine == 'aarch64'" },
-{ url = "https://github.com/harshil21/polars-runtime-32-ft/releases/download/v1.37.1/polars_runtime_32-1.37.1-cp314-cp314t-manylinux_2_31_x86_64.whl", marker = "platform_machine == 'x86_64'" },
-{ url = "https://github.com/harshil21/polars-runtime-32-ft/releases/download/v1.37.1/polars_runtime_32-1.37.1-cp314-cp314t-win_amd64.whl", marker = "platform_machine == 'AMD64'" }
-]
-
+```bash
+uv sync --frozen --python 3.14.2t --group dev
+env -u PYTHON_GIL uv run --frozen python -W error::RuntimeWarning -m pytest -q
 ```
 
-Then doing a regular `uv sync` should install the correct wheel for your platform.
+`pyproject.toml` selects the local wheel in `wheels/` with a platform marker.
+The environment must use `cp314t`; an ordinary `cp314` interpreter is not an
+acceptance substitute. Tests import Polars in a fresh process without forcing
+`PYTHON_GIL`, verify that the GIL stays disabled, and exercise frames, exact
+nanosecond integers, CSV scans and concurrent frame operations.
 
-## How it works
+## Rebuild the wheel
 
-I compiled polars from source by editing the [Makefile](https://github.com/pola-rs/polars/blob/py-1.37.1/Makefile) to add a new target for `cp314t` (Python 3.14t).
+The source archive is `polars_runtime_32-2.0.0rc1.tar.gz`, SHA256:
 
-Specifically, I replaced the `maturin develop` with `maturin build`, and added the `--compatibility pypi` flag. The builds were cross compiled with the `--zig` flag.
+```text
+97e36039063cc8f201cb5081341e01533ee854093c9bda6365c7b7b7e368ef2f
+```
 
-## Support
+Bootstrap a build environment if the wheel has not been created yet:
 
-If you encounter any issues or have questions regarding this package, please open an issue.
+```bash
+uv venv --python 3.14.2t .venv
+uv pip install --python .venv/bin/python 'maturin[zig]==1.15.0' pytest
+rustup toolchain install nightly-2026-09-01 --profile minimal
+bash scripts/build.sh
+uv sync --python 3.14.2t --group dev
+```
 
-This repository will be archived when polars officially supports Python 3.14t (i.e. with wheels).
-See this PR for tracking: https://github.com/pola-rs/polars/pull/21914
+The script downloads and checks the sdist, applies
+[the two-line ABI patch](patches/polars-2.0.0rc1-drop-abi3.diff), and runs:
 
-## Disclaimer
+```bash
+maturin build --release --zig --compatibility manylinux_2_28 --strip \
+  --interpreter .venv/bin/python --out wheels
+```
 
-These are wheels I compiled myself, so use this entirely at your own risk. I take no responsiblity for the world ending.
+`abi3-py310` selects the GIL-build stable ABI. Removing that feature in both
+Cargo manifests lets PyO3 build for the selected interpreter's `cp314t` ABI.
+The source modules already declare `gil_used=false`; the patch does not change
+frame semantics or force an unsafe GIL setting.
 
-## License
+Zig supplies a glibc 2.28 link target even on a newer build host. Maturin audits
+the resulting compatibility tag; the wheel is not renamed to imply compatibility.
+Build sources and Cargo outputs remain under `/tmp/questra-polars-314t-2.0.0rc1`
+by default (`POLARS_WORK_DIR` overrides this). Cargo uses four jobs by default
+(`CARGO_BUILD_JOBS` overrides this). The upstream default features are `full,nightly`.
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+`wheels/build-manifest.json` records source/patch/wheel hashes, Rust and maturin
+versions, Zig version, exact command, features and elapsed seconds. The wheel
+and manifest are local artifacts until explicitly published.
+
+The native version string `2.0.0-rc.1` is the Rust spelling of the pinned Python
+package version `2.0.0rc1`; acceptance checks both package metadata and native version.

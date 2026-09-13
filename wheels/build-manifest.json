@@ -1,0 +1,47 @@
+{
+  "version": "2.0.0rc1",
+  "version_reason": "requested Polars 2.0 free-threaded wheel",
+  "sdist_sha256": "97e36039063cc8f201cb5081341e01533ee854093c9bda6365c7b7b7e368ef2f",
+  "command": [
+    "maturin",
+    "build",
+    "--release",
+    "--zig",
+    "--compatibility",
+    "manylinux_2_28",
+    "--strip",
+    "--interpreter",
+    "/root/worktrees-rs/polars-runtime-32-ft/.venv/bin/python",
+    "--out",
+    "/root/worktrees-rs/polars-runtime-32-ft/wheels"
+  ],
+  "rustc": "rustc 1.100.0-nightly (0dfb098f3 2026-08-31)\nbinary: rustc\ncommit-hash: 0dfb098f3aeecbe38c2566ca090193280e7349e7\ncommit-date: 2026-08-31\nhost: x86_64-unknown-linux-gnu\nrelease: 1.100.0-nightly\nLLVM version: 23.1.0\n",
+  "maturin": "maturin 1.15.0",
+  "ziglang": "0.16.0",
+  "python": "3.14.2 free-threading build (main, Jan 28 2026, 00:01:12) [Clang 21.1.4 ]",
+  "interpreter_sha256": "ec7d71d0db90877e5688b074e96271e98f28bc69dc7549cf182733b3953c2263",
+  "jobs": 4,
+  "features": [
+    "default:full",
+    "default:nightly"
+  ],
+  "patches": [
+    {
+      "path": "patches/polars-2.0.0rc1-drop-abi3.diff",
+      "sha256": "02bf35143ce7891f05acc02a20307a5ca4ef5c328f3b4bbf8626596273eff426"
+    }
+  ],
+  "wheels": [
+    {
+      "path": "/root/worktrees-rs/polars-runtime-32-ft/wheels/polars_runtime_32-2.0.0rc1-cp314-cp314t-manylinux_2_28_x86_64.whl",
+      "sha256": "23ff980d57520eb84ac9e5d85777e262591d42f75c32f388fcd0764d9e160cba"
+    }
+  ],
+  "references": [
+    "https://github.com/harshil21/polars-runtime-32-ft",
+    "https://github.com/pola-rs/polars/pull/21914"
+  ],
+  "initial_unstripped_build_seconds": 907,
+  "final_strip_cargo_build_seconds": 419,
+  "timing_note": "Initial complete build 907 wall seconds; final strip rebuild Cargo-reported 419 seconds, packaging excluded."
+}

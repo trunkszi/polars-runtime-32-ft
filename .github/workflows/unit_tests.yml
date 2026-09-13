@@ -1,39 +1,31 @@
-name: Unit Tests
+name: CPython 3.14t acceptance
 
 on:
   pull_request:
-    branches:
-      - "**" # Matches all branch names, for PRs
   push:
-    branches:
-      - "main" # Run tests on main branch
+    branches: [main, polars-2.0]
+  workflow_dispatch:
 
 jobs:
-  pytest:
-    name: pytest
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 5
-    strategy:
-      matrix:
-        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest]
-      fail-fast: False
+  free-threaded:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86
         with:
-          enable-cache: true
-          version: "0.9.28"
-      - name: Set up Python
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
-        with:
-          python-version-file: "pyproject.toml"
-
-      - name: Install the project
-        run: uv sync -p 3.14t --verbose --group dev
-
-      - name: Run tests with coverage
+          version: "0.10.6"
+      - name: Install interpreter and locked local wheel
+        run: uv sync --frozen --python 3.14.2t --group dev
+      - name: Verify default import and frame operations
+        run: env -u PYTHON_GIL uv run --frozen python -W error::RuntimeWarning -m pytest -q
+      - name: Verify recorded wheel digest
         run: |
-          # Run tests with coverage except for the integration tests
-          uv run pytest -v
+          uv run --frozen python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          manifest = json.loads(Path('wheels/build-manifest.json').read_text())
+          for wheel in manifest['wheels']:
+              path = Path('wheels') / Path(wheel['path']).name
+              assert hashlib.sha256(path.read_bytes()).hexdigest() == wheel['sha256']
+          PY

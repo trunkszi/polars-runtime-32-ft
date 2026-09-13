@@ -1,26 +1,24 @@
 [project]
 name = "polars-runtime-32-ft"
-version = "0.1.0"
-description = "Wheels for polars python 3.14 free threaded"
+version = "0.2.0"
+description = "Reproducible Polars 2.0 wheels for CPython 3.14 free threading"
 readme = "README.md"
-authors = [
-    { name = "Harshil", email = "37377066+harshil21@users.noreply.github.com" }
-]
-requires-python = ">=3.14"
-dependencies = ["polars==1.37.1", "polars-runtime-32"]
+authors = [{ name = "Harshil", email = "37377066+harshil21@users.noreply.github.com" }]
+requires-python = ">=3.14,<3.15"
+dependencies = ["polars==2.0.0rc1", "polars-runtime-32==2.0.0rc1"]
 
 [dependency-groups]
-dev = [
-    "pytest",
-]
-
+dev = ["pytest", "maturin[zig]==1.15.0"]
 
 [tool.uv.sources]
 polars-runtime-32 = [
-{ path = "wheels/polars_runtime_32-1.37.1-cp314-cp314t-manylinux_2_31_x86_64.whl", marker = "platform_machine == 'x86_64'"},
-{ path = "wheels/polars_runtime_32-1.37.1-cp314-cp314t-manylinux_2_31_aarch64.whl", marker = "platform_machine == 'aarch64'"},
-{ path = "wheels/polars_runtime_32-1.37.1-cp314-cp314t-win_amd64.whl", marker = "platform_machine == 'AMD64'"}
+  { path = "wheels/polars_runtime_32-2.0.0rc1-cp314-cp314t-manylinux_2_28_x86_64.whl", marker = "sys_platform == 'linux' and platform_machine == 'x86_64'" },
+  # aarch64: add a verified local cp314t wheel and matching marker before enabling.
+  # win_amd64: add a verified local cp314t wheel and matching marker before enabling.
 ]
+
+[tool.pytest.ini_options]
+filterwarnings = ["error::RuntimeWarning"]
 
 [build-system]
 requires = ["uv_build>=0.9.16,<0.10.0"]
