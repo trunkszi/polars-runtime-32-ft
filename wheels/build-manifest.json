@@ -1,7 +1,7 @@
 {
-  "version": "2.0.0rc1",
+  "version": "2.0.0",
   "version_reason": "requested Polars 2.0 free-threaded wheel",
-  "sdist_sha256": "97e36039063cc8f201cb5081341e01533ee854093c9bda6365c7b7b7e368ef2f",
+  "sdist_sha256": "b5f9afcc742b4a67eabd2c680ff0f12eb02ede9b4bf807bffabd6dbb9a58d5c7",
   "command": [
     "maturin",
     "build",
@@ -17,31 +17,29 @@
   ],
   "rustc": "rustc 1.100.0-nightly (0dfb098f3 2026-08-31)\nbinary: rustc\ncommit-hash: 0dfb098f3aeecbe38c2566ca090193280e7349e7\ncommit-date: 2026-08-31\nhost: x86_64-unknown-linux-gnu\nrelease: 1.100.0-nightly\nLLVM version: 23.1.0\n",
   "maturin": "maturin 1.15.0",
-  "ziglang": "0.16.0",
-  "python": "3.14.2 free-threading build (main, Jan 28 2026, 00:01:12) [Clang 21.1.4 ]",
-  "interpreter_sha256": "ec7d71d0db90877e5688b074e96271e98f28bc69dc7549cf182733b3953c2263",
+  "ziglang": "0.17.0",
+  "python": "3.15.0 free-threading build (main, Oct 14 2026, 01:06:54) [Clang 23.1.3 ]",
+  "interpreter_sha256": "45e63df0b8591fc9dd2e5d71de2c8aeb2079ec723a765fd6ba431c51341f00d8",
   "jobs": 4,
   "features": [
     "default:full",
     "default:nightly"
   ],
+  "elapsed_seconds": 849,
   "patches": [
     {
-      "path": "patches/polars-2.0.0rc1-drop-abi3.diff",
-      "sha256": "02bf35143ce7891f05acc02a20307a5ca4ef5c328f3b4bbf8626596273eff426"
+      "path": "patches/polars-2.0.0-drop-abi3.diff",
+      "sha256": "eb39f252d891e9f553a1f8314e4c1040108546adb8eccd41cb208617c4ec1fc3"
     }
   ],
   "wheels": [
     {
-      "path": "/root/worktrees-rs/polars-runtime-32-ft/wheels/polars_runtime_32-2.0.0rc1-cp314-cp314t-manylinux_2_28_x86_64.whl",
-      "sha256": "23ff980d57520eb84ac9e5d85777e262591d42f75c32f388fcd0764d9e160cba"
+      "path": "/root/worktrees-rs/polars-runtime-32-ft/wheels/polars_runtime_32-2.0.0-cp315-cp315t-manylinux_2_28_x86_64.whl",
+      "sha256": "ec5f58ab3738033f248252d4e5a5e90cbf2b0b976192f9663e6e1a858d5cf72c"
     }
   ],
   "references": [
     "https://github.com/harshil21/polars-runtime-32-ft",
     "https://github.com/pola-rs/polars/pull/21914"
-  ],
-  "initial_unstripped_build_seconds": 907,
-  "final_strip_cargo_build_seconds": 419,
-  "timing_note": "Initial complete build 907 wall seconds; final strip rebuild Cargo-reported 419 seconds, packaging excluded."
+  ]
 }

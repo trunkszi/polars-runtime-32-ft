@@ -7,14 +7,14 @@ import sysconfig
 
 
 def test_import_keeps_gil_disabled():
-    assert sys.version_info[:2] == (3, 14)
+    assert sys.version_info[:2] == (3, 15)
     assert sysconfig.get_config_var("Py_GIL_DISABLED") == 1
     assert "PYTHON_GIL" not in os.environ
     subprocess.run(
         [sys.executable, "-W", "error::RuntimeWarning", "-c",
          "import sys, polars, importlib.metadata as md; assert not sys._is_gil_enabled(); "
-         "assert md.version('polars') == md.version('polars-runtime-32') == '2.0.0rc1'; "
-         "assert polars.__version__ in {'2.0.0rc1', '2.0.0-rc.1'}"],
+         "assert md.version('polars') == md.version('polars-runtime-32') == '2.0.0'; "
+         "assert polars.__version__ == '2.0.0'"],
         check=True,
     )
 

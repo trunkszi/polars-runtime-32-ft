@@ -1,6 +1,6 @@
 --- a/py-polars/runtime/polars-runtime-32/Cargo.toml
 +++ b/py-polars/runtime/polars-runtime-32/Cargo.toml
-@@ -12,7 +12,7 @@
+@@ -13,7 +13,7 @@
  [dependencies]
  libc = { workspace = true }
  polars-python = { workspace = true, features = ["allocator", "c_api", "pymethods", "iejoin", "rt32"] }
@@ -11,7 +11,7 @@
  
 --- a/crates/polars-python/Cargo.toml
 +++ b/crates/polars-python/Cargo.toml
-@@ -50,7 +50,7 @@
+@@ -51,7 +51,7 @@
  num-traits = { workspace = true }
  numpy = { workspace = true }
  parking_lot = { workspace = true }
